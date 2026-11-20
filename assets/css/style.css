@@ -1,0 +1,751 @@
+/* ==========================================================================
+   1. DESIGN TOKENS & THEME VARIABLES
+   ========================================================================== */
+:root {
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+    /* Surface & Canvas */
+    --bg-canvas: #f1f5f9;
+    --bg-gradient: radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 45%),
+                   radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.07), transparent 45%);
+    --surface-card: #ffffff;
+    --surface-subtle: #f8fafc;
+    --surface-hover: #f1f5f9;
+
+    /* Typography */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    /* Borders & Rings */
+    --border-color: #cbd5e1;
+    --border-subtle: #e2e8f0;
+    --focus-ring: rgba(37, 99, 235, 0.22);
+
+    /* Brand & Actions */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-bg: #e2e8f0;
+    --secondary-hover: #cbd5e1;
+    --danger-color: #dc2626;
+    --danger-hover: #b91c1c;
+
+    /* Status Badges & Alerts */
+    --success-bg: #dcfce7;
+    --success-border: #86efac;
+    --success-text: #166534;
+
+    --warning-bg: #fef3c7;
+    --warning-border: #fde68a;
+    --warning-text: #92400e;
+
+    --error-bg: #fee2e2;
+    --error-border: #fca5a5;
+    --error-text: #991b1b;
+
+    /* Elevation & Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    --shadow-card: 0 20px 38px -12px rgba(15, 23, 42, 0.1), 0 4px 12px -4px rgba(15, 23, 42, 0.05);
+    --transition-fast: 0.18s ease;
+}
+
+html[data-theme="dark"] {
+    --bg-canvas: #090d16;
+    --bg-gradient: radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 45%),
+                   radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.1), transparent 45%);
+    --surface-card: #111827;
+    --surface-subtle: #1e293b;
+    --surface-hover: #263349;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --border-color: #334155;
+    --border-subtle: #1e293b;
+    --focus-ring: rgba(59, 130, 246, 0.32);
+
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --secondary-bg: #1e293b;
+    --secondary-hover: #334155;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+
+    --success-bg: rgba(6, 78, 59, 0.65);
+    --success-border: #059669;
+    --success-text: #a7f3d0;
+
+    --warning-bg: rgba(120, 53, 15, 0.65);
+    --warning-border: #d97706;
+    --warning-text: #fde68a;
+
+    --error-bg: rgba(127, 29, 29, 0.65);
+    --error-border: #dc2626;
+    --error-text: #fecaca;
+
+    --shadow-card: 0 24px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+/* ==========================================================================
+   2. RESET & BASE TYPOGRAPHY
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-canvas);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+code {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+}
+
+/* ==========================================================================
+   3. PAGE CONTAINERS & CARD ARCHITECTURE
+   ========================================================================== */
+.page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1.25rem;
+}
+
+.dashboard-wrapper {
+    align-items: flex-start;
+}
+
+.card {
+    width: 100%;
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 2.5rem;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.hero-card {
+    max-width: 640px;
+    text-align: center;
+}
+
+.auth-card {
+    max-width: 490px;
+}
+
+.dashboard-card {
+    max-width: 1060px;
+}
+
+/* ==========================================================================
+   4. NAVIGATION BARS, HEADERS & HERO STRIPS
+   ========================================================================== */
+.top-bar-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.top-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+}
+
+.card-header {
+    margin-bottom: 1.75rem;
+}
+
+.card-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-top: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.78rem;
+    border-radius: var(--radius-full);
+    background-color: rgba(37, 99, 235, 0.12);
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.feature-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+}
+
+.feature-item strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.feature-item span {
+    display: block;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+}
+
+/* ==========================================================================
+   5. FORM CONTROLS, INPUTS & PASSWORD STRENGTH METER
+   ========================================================================== */
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select,
+.filter-form input,
+.filter-form select {
+    width: 100%;
+    padding: 0.72rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.94rem;
+    color: var(--text-primary);
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 84px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.filter-form input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.filter-form input:focus,
+.filter-form select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3.5px var(--focus-ring);
+}
+
+.form-group input.input-invalid,
+.form-group textarea.input-invalid {
+    border-color: var(--danger-color);
+}
+
+.form-row-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.form-row-inline {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.compact-group {
+    margin-bottom: 0;
+    min-width: 220px;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 6rem;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.55rem;
+    padding: 0.3rem 0.55rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--primary-color);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.toggle-password:hover {
+    background-color: rgba(37, 99, 235, 0.1);
+}
+
+.strength-meter {
+    width: 100%;
+    height: 6px;
+    margin-top: 0.55rem;
+    background-color: var(--border-subtle);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.strength-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.helper-text {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+}
+
+.error-text {
+    display: block;
+    min-height: 1.1em;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--danger-color);
+    margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   6. BUTTON SYSTEM
+   ========================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.75rem 1.3rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform 0.1s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-sm {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.84rem;
+}
+
+.btn-xs {
+    padding: 0.34rem 0.68rem;
+    font-size: 0.78rem;
+    border-radius: var(--radius-sm);
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 0.4rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-bg);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-hover);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-ghost:hover {
+    background-color: var(--surface-subtle);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-hover);
+}
+
+/* ==========================================================================
+   7. ALERTS & CARD FOOTERS
+   ========================================================================== */
+.alert {
+    padding: 0.9rem 1.05rem;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.35rem;
+}
+
+.alert-error {
+    background-color: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--error-text);
+}
+
+.alert-success {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+}
+
+.card-footer {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.card-footer a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.card-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   8. DASHBOARD LAYOUT, METRIC CARDS & DATA TABLES
+   ========================================================================== */
+.dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 1.75rem;
+}
+
+.dashboard-header h1 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-top: 0.45rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-box {
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.stat-box h2 {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.stat-box p {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.panel-section {
+    margin-top: 2.25rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.panel-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1.1rem;
+}
+
+.section-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.15rem;
+}
+
+.section-toolbar h2 {
+    margin-bottom: 0;
+}
+
+.filter-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.filter-form input,
+.filter-form select {
+    width: auto;
+    min-width: 165px;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.86rem;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.data-table th {
+    background-color: var(--surface-subtle);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: rgba(148, 163, 184, 0.04);
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--surface-hover);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.pill {
+    display: inline-block;
+    padding: 0.22rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-color);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.22rem 0.62rem;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.status-published,
+.status-success {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+}
+
+.status-draft,
+.status-locked {
+    background-color: var(--warning-bg);
+    border-color: var(--warning-border);
+    color: var(--warning-text);
+}
+
+.status-failed {
+    background-color: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--error-text);
+}
+
+.actions-cell {
+    white-space: nowrap;
+}
+
+.inline-form {
+    display: inline-block;
+    margin-right: 0.35rem;
+}
+
+.text-muted {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.empty-state {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-subtle);
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ==========================================================================
+   9. RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 600px) {
+    .page-wrapper {
+        padding: 1.25rem 0.85rem;
+    }
+
+    .card {
+        padding: 1.5rem 1.25rem;
+        border-radius: var(--radius-md);
+    }
+
+    .card-header h1 {
+        font-size: 1.45rem;
+    }
+
+    .hero-actions .btn,
+    .filter-form,
+    .filter-form input,
+    .filter-form select,
+    .filter-form .btn {
+        width: 100%;
+    }
+}

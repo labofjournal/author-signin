@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk Penulis — Author Studio</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <main class="page-wrapper">
+        <section class="card auth-card">
+            <div class="top-bar-row">
+                <a href="../index.html" class="back-link">&larr; Kembali ke Beranda</a>
+                <button type="button" id="theme-toggle" class="btn btn-ghost btn-sm">Mode Gelap</button>
+            </div>
+
+            <header class="card-header">
+                <span class="badge">Portal Penulis</span>
+                <h1>Masuk Penulis</h1>
+                <p class="subtitle">Akses studio artikel, statistik tulisan, dan riwayat keamanan akun Anda.</p>
+            </header>
+
+            <div id="alert-box" class="alert" role="alert" hidden></div>
+
+            <form id="login-form" action="../php/process_login.php" method="POST" novalidate>
+                <div class="form-group">
+                    <label for="email">Alamat Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="penulis@contoh.com"
+                        autocomplete="email"
+                        required
+                    >
+                    <small class="error-text" id="email-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Kata Sandi</label>
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Masukkan kata sandi"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="password"
+                            aria-label="Tampilkan atau sembunyikan kata sandi"
+                        >
+                            Tampilkan
+                        </button>
+                    </div>
+                    <small class="error-text" id="password-error"></small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Masuk ke Studio</button>
+            </form>
+
+            <footer class="card-footer">
+                <p>Belum memiliki akun penulis? <a href="register.html">Daftar akun baru</a></p>
+            </footer>
+        </section>
+    </main>
+
+    <script src="../assets/js/script.js"></script>
+</body>
+</html>
