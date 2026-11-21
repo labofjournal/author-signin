@@ -1,0 +1,5 @@
+kind: wasmer.io/App.v0
+name: author-studio
+package: wasmer/php
+scaling:
+  mode: single_concurrency
