@@ -1,0 +1,36 @@
+# File database SQLite & journal/WAL (jangan di-commit agar data akun/log tidak bocor & tidak konflik)
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.bak
+*.bak.*
+
+# File sensitif, environment, dan kredensial
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# File sementara, cache, dan log runtime
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Dependensi & artefak build umum
+vendor/
+node_modules/
+composer.phar
