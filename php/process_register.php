@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -31,41 +34,51 @@ if (mb_strlen($bio) > 400) {
     redirectTo('../componnent/register.html?error=bio_too_long');
 }
 
-if (strlen($password) < 8) {
-    redirectTo('../componnent/register.html?error=short_password');
+if (mb_strlen($password) < 8) {
+    redirectTo('../componnent/register.html?error=weak_password');
 }
 
-if ($password !== $confirmPassword) {
+if (!hash_equals($password, $confirmPassword)) {
     redirectTo('../componnent/register.html?error=password_mismatch');
 }
 
-try {
-    $pdo = getDBConnection();
+$pdo = getDbConnection();
 
-    $checkStmt = $pdo->prepare('SELECT id FROM authors WHERE email = :email LIMIT 1');
-    $checkStmt->execute([':email' => $email]);
+$checkStmt = $pdo->prepare('SELECT id FROM authors WHERE email = :email LIMIT 1');
+$checkStmt->execute([':email' => strtolower($email)]);
 
-    if ($checkStmt->fetch()) {
-        redirectTo('../componnent/register.html?error=email_exists');
-    }
-
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-    $insertStmt = $pdo->prepare('
-        INSERT INTO authors (full_name, pen_name, email, bio, password_hash, role)
-        VALUES (:full_name, :pen_name, :email, :bio, :password_hash, :role)
-    ');
-    $insertStmt->execute([
-        ':full_name'     => $fullName,
-        ':pen_name'      => $penName !== '' ? $penName : null,
-        ':email'         => $email,
-        ':bio'           => $bio !== '' ? $bio : null,
-        ':password_hash' => $passwordHash,
-        ':role'          => 'author',
-    ]);
-
-    redirectTo('../componnent/login.html?status=registered');
-} catch (Throwable $e) {
-    error_log('Registration Error: ' . $e->getMessage());
-    redirectTo('../componnent/register.html?error=server_error');
+if ($checkStmt->fetchColumn() !== false) {
+    recordLoginAttempt($pdo, null, strtolower($email), 'register_email_exists');
+    redirectTo('../componnent/register.html?error=email_exists');
 }
+
+$passwordHash = password_hash($password, PASSWORD_DEFAULT);
+if ($passwordHash === false) {
+    redirectTo('../componnent/register.html?error=hash_failed');
+}
+
+$insertStmt = $pdo->prepare('
+    INSERT INTO authors (full_name, email, pen_name, bio, password_hash, role)
+    VALUES (:full_name, :email, :pen_name, :bio, :password_hash, :role)
+');
+
+$insertStmt->execute([
+    ':full_name'     => $fullName,
+    ':email'         => strtolower($email),
+    ':pen_name'      => $penName !== '' ? $penName : null,
+    ':bio'           => $bio !== '' ? $bio : null,
+    ':password_hash' => $passwordHash,
+    ':role'          => 'author',
+]);
+
+$newAuthorId = (int) $pdo->lastInsertId();
+recordLoginAttempt($pdo, $newAuthorId, strtolower($email), 'registered');
+
+session_regenerate_id(true);
+$_SESSION['author_id'] = $newAuthorId;
+$_SESSION['full_name'] = $fullName;
+$_SESSION['pen_name']  = $penName !== '' ? $penName : $fullName;
+$_SESSION['email']     = strtolower($email);
+$_SESSION['role']      = 'author';
+
+redirectTo('dashboard.php');
