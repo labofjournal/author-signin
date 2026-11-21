@@ -1,141 +1,98 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Penulis — Author Studio</title>
+    <title>Author Registration — Author Studio</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
+
 <body>
     <main class="page-wrapper">
         <section class="card auth-card">
             <div class="top-bar-row">
-                <a href="../index.html" class="back-link">&larr; Kembali ke Beranda</a>
-                <button type="button" id="theme-toggle" class="btn btn-ghost btn-sm">Mode Gelap</button>
+                <a href="../index.html" class="back-link">&larr; Back to Home</a>
+                <button type="button" id="theme-toggle" class="btn btn-ghost btn-sm">Dark Mode</button>
             </div>
 
             <header class="card-header">
-                <span class="badge">Akun Baru</span>
-                <h1>Registrasi Penulis</h1>
-                <p class="subtitle">Buat profil penulis baru lengkap dengan nama pena dan biografi singkat.</p>
+                <h1>Author Registration</h1>
+                <p class="subtitle">Create a new author profile with your pen name and short biography.</p>
             </header>
 
             <div id="alert-box" class="alert" role="alert" hidden></div>
 
             <form id="register-form" action="../php/process_register.php" method="POST" novalidate>
                 <div class="form-group">
-                    <label for="full_name">Nama Lengkap</label>
-                    <input
-                        type="text"
-                        id="full_name"
-                        name="full_name"
-                        placeholder="Contoh: Budi Santoso"
-                        autocomplete="name"
-                        minlength="3"
-                        maxlength="100"
-                        required
-                    >
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="e.g., Jordan Vance"
+                        autocomplete="name" minlength="3" maxlength="100" required>
                     <small class="error-text" id="full_name-error"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="pen_name">Nama Pena (Opsional)</label>
-                    <input
-                        type="text"
-                        id="pen_name"
-                        name="pen_name"
-                        placeholder="Contoh: B. Santoso / Penulis Teknologi"
-                        maxlength="100"
-                    >
+                    <label for="pen_name">Pen Name (Optional)</label>
+                    <input type="text" id="pen_name" name="pen_name" placeholder="e.g., J. Vance / Tech Columnist"
+                        maxlength="100">
                     <small class="error-text" id="pen_name-error"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Alamat Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="penulis@contoh.com"
-                        autocomplete="email"
-                        required
-                    >
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="author@example.com" autocomplete="email"
+                        required>
                     <small class="error-text" id="email-error"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="bio">Biografi Singkat (Opsional)</label>
-                    <textarea
-                        id="bio"
-                        name="bio"
-                        rows="3"
-                        maxlength="400"
-                        placeholder="Ceritakan fokus tulisan atau latar belakang Anda..."
-                    ></textarea>
+                    <label for="bio">Short Bio (Optional)</label>
+                    <textarea id="bio" name="bio" rows="3" maxlength="400"
+                        placeholder="Share your writing focus or background..."></textarea>
                     <small class="error-text" id="bio-error"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Kata Sandi</label>
+                    <label for="password">Password</label>
                     <div class="password-wrapper">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Minimal 8 karakter, huruf besar/kecil &amp; angka"
-                            autocomplete="new-password"
-                            minlength="8"
-                            required
-                        >
-                        <button
-                            type="button"
-                            class="toggle-password"
-                            data-target="password"
-                            aria-label="Tampilkan atau sembunyikan kata sandi"
-                        >
-                            Tampilkan
+                        <input type="password" id="password" name="password"
+                            placeholder="Minimum 8 characters, upper/lowercase &amp; numbers"
+                            autocomplete="new-password" minlength="8" required>
+                        <button type="button" class="toggle-password" data-target="password"
+                            aria-label="Show or hide password">
+                            Show
                         </button>
                     </div>
                     <div class="strength-meter" aria-hidden="true">
                         <div id="strength-bar" class="strength-bar"></div>
                     </div>
-                    <small class="helper-text" id="strength-label">Kekuatan kata sandi: Belum diisi</small>
+                    <small class="helper-text" id="strength-label">Password strength: Not entered</small>
                     <small class="error-text" id="password-error"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="confirm_password">Konfirmasi Kata Sandi</label>
+                    <label for="confirm_password">Confirm Password</label>
                     <div class="password-wrapper">
-                        <input
-                            type="password"
-                            id="confirm_password"
-                            name="confirm_password"
-                            placeholder="Ulangi kata sandi"
-                            autocomplete="new-password"
-                            minlength="8"
-                            required
-                        >
-                        <button
-                            type="button"
-                            class="toggle-password"
-                            data-target="confirm_password"
-                            aria-label="Tampilkan atau sembunyikan konfirmasi kata sandi"
-                        >
-                            Tampilkan
+                        <input type="password" id="confirm_password" name="confirm_password"
+                            placeholder="Re-enter your password" autocomplete="new-password" minlength="8" required>
+                        <button type="button" class="toggle-password" data-target="confirm_password"
+                            aria-label="Show or hide confirm password">
+                            Show
                         </button>
                     </div>
                     <small class="error-text" id="confirm_password-error"></small>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Daftar Akun Penulis</button>
+                <button type="submit" class="btn btn-primary btn-block">Create Author Account</button>
             </form>
 
             <footer class="card-footer">
-                <p>Sudah punya akun penulis? <a href="login.html">Masuk di sini</a></p>
+                <p>Already have an author account? <a href="login.html">Sign in here</a></p>
             </footer>
         </section>
     </main>
 
     <script src="../assets/js/script.js"></script>
 </body>
+
 </html>

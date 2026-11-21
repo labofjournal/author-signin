@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initRegisterValidation();
 });
 
-/**
- * Mengelola tema Terang/Gelap menggunakan localStorage
- */
 function initThemeToggle() {
     const savedTheme = localStorage.getItem('author_theme') || 'light';
     applyTheme(savedTheme);
@@ -29,13 +26,10 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const toggleBtn = document.getElementById('theme-toggle');
     if (toggleBtn) {
-        toggleBtn.textContent = theme === 'dark' ? 'Mode Terang' : 'Mode Gelap';
+        toggleBtn.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
     }
 }
 
-/**
- * Menampilkan notifikasi berdasarkan parameter URL (?error=... atau ?status=...)
- */
 function handleUrlAlerts() {
     const alertBox = document.getElementById('alert-box');
     if (!alertBox) return;
@@ -45,32 +39,32 @@ function handleUrlAlerts() {
     const status = params.get('status');
 
     const errorMessages = {
-        invalid: 'Email atau kata sandi yang Anda masukkan salah.',
-        empty_fields: 'Harap isi email dan kata sandi dengan benar.',
-        unauthorized: 'Silakan masuk terlebih dahulu untuk mengakses dashboard.',
-        account_locked: 'Akun terkunci sementara selama 15 menit karena terlalu banyak percobaan login gagal.',
-        invalid_name: 'Nama lengkap harus terdiri dari 3 hingga 100 karakter.',
-        invalid_pen_name: 'Nama pena maksimal 100 karakter.',
-        invalid_email: 'Format alamat email tidak valid.',
-        bio_too_long: 'Biografi maksimal 400 karakter.',
-        short_password: 'Kata sandi minimal harus 8 karakter.',
-        password_mismatch: 'Konfirmasi kata sandi tidak cocok.',
-        email_exists: 'Alamat email ini sudah terdaftar. Silakan gunakan email lain atau masuk.',
-        csrf_invalid: 'Token keamanan tidak valid. Silakan muat ulang halaman dan coba lagi.',
-        article_validation: 'Lengkapi judul (min. 4 karakter), ringkasan (min. 10 karakter), dan isi artikel (min. 20 karakter).',
-        article_not_found: 'Artikel tidak ditemukan atau bukan milik akun Anda.',
-        profile_validation: 'Periksa kembali nama lengkap (3-100 karakter) dan biografi (maks. 400 karakter).',
-        server_error: 'Terjadi kesalahan pada server. Silakan coba lagi nanti.'
+        invalid: 'The email address or password you entered is incorrect.',
+        empty_fields: 'Please enter a valid email address and password.',
+        unauthorized: 'Please sign in first to access the author dashboard.',
+        account_locked: 'Account temporarily locked for 15 minutes due to multiple failed sign-in attempts.',
+        invalid_name: 'Full name must be between 3 and 100 characters.',
+        invalid_pen_name: 'Pen name must not exceed 100 characters.',
+        invalid_email: 'Please provide a valid email address.',
+        bio_too_long: 'Biography must not exceed 400 characters.',
+        short_password: 'Password must be at least 8 characters long.',
+        password_mismatch: 'Password confirmation does not match.',
+        email_exists: 'This email address is already registered. Please sign in or use another email.',
+        csrf_invalid: 'Invalid security token. Please refresh the page and try again.',
+        article_validation: 'Please enter a title (min. 4 chars), summary (min. 10 chars), and content (min. 20 chars).',
+        article_not_found: 'Article not found or you do not have permission to modify it.',
+        profile_validation: 'Please check your full name (3-100 chars) and biography (max. 400 chars).',
+        server_error: 'An internal server error occurred. Please try again later.'
     };
 
     const statusMessages = {
-        registered: 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.',
-        logged_out: 'Anda telah berhasil keluar dari sesi.',
-        welcome: 'Selamat datang kembali di Author Studio.',
-        article_saved: 'Artikel berhasil disimpan.',
-        status_updated: 'Status publikasi artikel berhasil diperbarui.',
-        article_deleted: 'Artikel berhasil dihapus.',
-        profile_updated: 'Profil penulis berhasil diperbarui.'
+        registered: 'Registration successful! Please sign in with your new account.',
+        logged_out: 'You have been signed out successfully.',
+        welcome: 'Welcome back to Author Studio.',
+        article_saved: 'Article saved successfully.',
+        status_updated: 'Article publication status updated.',
+        article_deleted: 'Article deleted permanently.',
+        profile_updated: 'Author profile updated successfully.'
     };
 
     if (error && errorMessages[error]) {
@@ -94,7 +88,7 @@ function initPasswordToggles() {
 
             const isPassword = input.type === 'password';
             input.type = isPassword ? 'text' : 'password';
-            button.textContent = isPassword ? 'Sembunyikan' : 'Tampilkan';
+            button.textContent = isPassword ? 'Hide' : 'Show';
         });
     });
 }
@@ -110,7 +104,7 @@ function initPasswordStrengthMeter() {
         if (!val) {
             bar.style.width = '0%';
             bar.style.backgroundColor = 'transparent';
-            label.textContent = 'Kekuatan kata sandi: Belum diisi';
+            label.textContent = 'Password strength: Not entered';
             return;
         }
 
@@ -121,16 +115,16 @@ function initPasswordStrengthMeter() {
         if (/[^A-Za-z0-9]/.test(val)) score++;
 
         const levels = [
-            { width: '25%', color: '#dc2626', text: 'Lemah' },
-            { width: '50%', color: '#f59e0b', text: 'Cukup' },
-            { width: '75%', color: '#2563eb', text: 'Kuat' },
-            { width: '100%', color: '#16a34a', text: 'Sangat Kuat' }
+            { width: '25%', color: '#dc2626', text: 'Weak' },
+            { width: '50%', color: '#f59e0b', text: 'Fair' },
+            { width: '75%', color: '#2563eb', text: 'Strong' },
+            { width: '100%', color: '#16a34a', text: 'Very Strong' }
         ];
 
         const idx = Math.max(0, Math.min(levels.length - 1, score - 1));
         bar.style.width = levels[idx].width;
         bar.style.backgroundColor = levels[idx].color;
-        label.textContent = `Kekuatan kata sandi: ${levels[idx].text}`;
+        label.textContent = `Password strength: ${levels[idx].text}`;
     });
 }
 
@@ -147,12 +141,12 @@ function initLoginValidation() {
         clearFieldError(passwordInput, 'password-error');
 
         if (!isValidEmail(emailInput.value.trim())) {
-            setFieldError(emailInput, 'email-error', 'Masukkan alamat email yang valid.');
+            setFieldError(emailInput, 'email-error', 'Please enter a valid email address.');
             isValid = false;
         }
 
         if (passwordInput.value.trim() === '') {
-            setFieldError(passwordInput, 'password-error', 'Kata sandi wajib diisi.');
+            setFieldError(passwordInput, 'password-error', 'Password is required.');
             isValid = false;
         }
 
@@ -180,22 +174,22 @@ function initRegisterValidation() {
 
         const nameVal = nameInput.value.trim();
         if (nameVal.length < 3 || nameVal.length > 100) {
-            setFieldError(nameInput, 'full_name-error', 'Nama lengkap harus antara 3 hingga 100 karakter.');
+            setFieldError(nameInput, 'full_name-error', 'Full name must be between 3 and 100 characters.');
             isValid = false;
         }
 
         if (!isValidEmail(emailInput.value.trim())) {
-            setFieldError(emailInput, 'email-error', 'Masukkan alamat email yang valid.');
+            setFieldError(emailInput, 'email-error', 'Please enter a valid email address.');
             isValid = false;
         }
 
         if (passwordInput.value.length < 8) {
-            setFieldError(passwordInput, 'password-error', 'Kata sandi minimal harus 8 karakter.');
+            setFieldError(passwordInput, 'password-error', 'Password must be at least 8 characters long.');
             isValid = false;
         }
 
         if (confirmInput.value !== passwordInput.value || confirmInput.value === '') {
-            setFieldError(confirmInput, 'confirm_password-error', 'Konfirmasi kata sandi tidak cocok.');
+            setFieldError(confirmInput, 'confirm_password-error', 'Password confirmation does not match.');
             isValid = false;
         }
 

@@ -12,7 +12,6 @@ $pdo = getDBConnection();
 $authorId = (int) $_SESSION['author_id'];
 $csrfToken = generateCsrfToken();
 
-// Ambil data profil penulis terbaru
 $authorStmt = $pdo->prepare('
     SELECT id, full_name, pen_name, email, bio, role, last_login_at, created_at
     FROM authors
@@ -26,7 +25,6 @@ if (!$authorProfile) {
     redirectTo('logout.php');
 }
 
-// Proses aksi POST (Artikel & Profil) dengan verifikasi CSRF
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         redirectTo('dashboard.php?error=csrf_invalid');
@@ -36,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'create_article') {
         $title    = sanitizeInput($_POST['title'] ?? '');
-        $category = sanitizeInput($_POST['category'] ?? 'Opini');
+        $category = sanitizeInput($_POST['category'] ?? 'Opinion');
         $summary  = sanitizeInput($_POST['summary'] ?? '');
         $content  = sanitizeInput($_POST['content'] ?? '');
         $status   = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
@@ -45,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirectTo('dashboard.php?error=article_validation');
         }
 
-        $allowedCategories = ['Opini', 'Teknologi', 'Sains', 'Sastra', 'Panduan'];
+        $allowedCategories = ['Opinion', 'Technology', 'Science', 'Literature', 'Guide'];
         if (!in_array($category, $allowedCategories, true)) {
-            $category = 'Opini';
+            $category = 'Opinion';
         }
 
         $slug = createSlug($title);
@@ -130,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Filter & pencarian artikel milik penulis
 $searchQuery = sanitizeInput($_GET['q'] ?? '');
 $filterStatus = $_GET['filter'] ?? 'all';
 if (!in_array($filterStatus, ['all', 'published', 'draft'], true)) {
@@ -155,7 +152,6 @@ $artStmt = $pdo->prepare($sql);
 $artStmt->execute($params);
 $articles = $artStmt->fetchAll();
 
-// Statistik ringkasan artikel
 $statStmt = $pdo->prepare('
     SELECT
         COUNT(*) AS total_articles,
@@ -167,7 +163,6 @@ $statStmt = $pdo->prepare('
 $statStmt->execute([':author_id' => $authorId]);
 $stats = $statStmt->fetch() ?: ['total_articles' => 0, 'total_published' => 0, 'total_drafts' => 0];
 
-// Riwayat login terakhir
 $logStmt = $pdo->prepare('
     SELECT ip_address, user_agent, status, created_at
     FROM login_logs
@@ -185,11 +180,11 @@ $safeBio   = escapeHtml($authorProfile['bio'] ?? '');
 $safeRole  = escapeHtml(strtoupper($authorProfile['role'] ?? 'author'));
 ?>
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Penulis — Author Studio</title>
+    <title>Author Dashboard — Author Studio</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -197,104 +192,101 @@ $safeRole  = escapeHtml(strtoupper($authorProfile['role'] ?? 'author'));
         <section class="card dashboard-card">
             <header class="dashboard-header">
                 <div>
-                    <span class="badge">Sesi Aktif &bull; <?= $safeRole ?></span>
-                    <h1>Halo, <?= $safeName ?>!</h1>
+                    <span class="badge">Active Session &bull; <?= $safeRole ?></span>
+                    <h1>Hello, <?= $safeName ?>!</h1>
                     <p class="subtitle">
                         Email: <strong><?= $safeEmail ?></strong>
                         <?php if (!empty($authorProfile['pen_name'])): ?>
-                            &bull; Nama Pena: <strong><?= $safePen ?></strong>
+                            &bull; Pen Name: <strong><?= $safePen ?></strong>
                         <?php endif; ?>
                     </p>
                 </div>
                 <div class="header-actions">
-                    <button type="button" id="theme-toggle" class="btn btn-ghost btn-sm">Mode Gelap</button>
-                    <a href="logout.php" class="btn btn-danger btn-sm">Keluar (Logout)</a>
+                    <button type="button" id="theme-toggle" class="btn btn-ghost btn-sm">Dark Mode</button>
+                    <a href="logout.php" class="btn btn-danger btn-sm">Sign Out</a>
                 </div>
             </header>
 
             <div id="alert-box" class="alert" role="alert" hidden></div>
 
-            <!-- Kartu Statistik -->
             <div class="dashboard-grid">
                 <article class="stat-box">
-                    <h2>Total Artikel</h2>
+                    <h2>Total Articles</h2>
                     <p><?= (int) ($stats['total_articles'] ?? 0) ?></p>
                 </article>
                 <article class="stat-box">
-                    <h2>Terpublikasi</h2>
+                    <h2>Published</h2>
                     <p><?= (int) ($stats['total_published'] ?? 0) ?></p>
                 </article>
                 <article class="stat-box">
-                    <h2>Draf Tersimpan</h2>
+                    <h2>Saved Drafts</h2>
                     <p><?= (int) ($stats['total_drafts'] ?? 0) ?></p>
                 </article>
                 <article class="stat-box">
-                    <h2>Login Terakhir</h2>
-                    <p><?= escapeHtml((string) ($authorProfile['last_login_at'] ?? 'Baru saja')) ?></p>
+                    <h2>Last Sign In</h2>
+                    <p><?= escapeHtml((string) ($authorProfile['last_login_at'] ?? 'Just now')) ?></p>
                 </article>
             </div>
 
-            <!-- Form Buat Artikel Baru -->
             <section class="panel-section">
-                <h2>Tulis Artikel Baru</h2>
+                <h2>Write New Article</h2>
                 <form action="dashboard.php" method="POST" class="article-form">
                     <input type="hidden" name="csrf_token" value="<?= escapeHtml($csrfToken) ?>">
                     <input type="hidden" name="action" value="create_article">
 
                     <div class="form-row-2">
                         <div class="form-group">
-                            <label for="title">Judul Artikel</label>
-                            <input type="text" id="title" name="title" placeholder="Minimal 4 karakter" required>
+                            <label for="title">Article Title</label>
+                            <input type="text" id="title" name="title" placeholder="Minimum 4 characters" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="category">Kategori</label>
+                            <label for="category">Category</label>
                             <select id="category" name="category">
-                                <option value="Opini">Opini</option>
-                                <option value="Teknologi">Teknologi</option>
-                                <option value="Sains">Sains</option>
-                                <option value="Sastra">Sastra</option>
-                                <option value="Panduan">Panduan</option>
+                                <option value="Opinion">Opinion</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Science">Science</option>
+                                <option value="Literature">Literature</option>
+                                <option value="Guide">Guide</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="summary">Ringkasan (Minimal 10 karakter)</label>
-                        <input type="text" id="summary" name="summary" placeholder="Ringkasan singkat isi artikel..." required>
+                        <label for="summary">Summary (Minimum 10 characters)</label>
+                        <input type="text" id="summary" name="summary" placeholder="Brief overview of your article..." required>
                     </div>
 
                     <div class="form-group">
-                        <label for="content">Isi Artikel (Minimal 20 karakter)</label>
-                        <textarea id="content" name="content" rows="4" placeholder="Tuliskan konten lengkap artikel Anda..." required></textarea>
+                        <label for="content">Article Content (Minimum 20 characters)</label>
+                        <textarea id="content" name="content" rows="4" placeholder="Write the full content of your article..." required></textarea>
                     </div>
 
                     <div class="form-row-inline">
                         <div class="form-group compact-group">
-                            <label for="status">Status Publikasi</label>
+                            <label for="status">Publication Status</label>
                             <select id="status" name="status">
-                                <option value="draft">Simpan sebagai Draf</option>
-                                <option value="published">Publikasikan Langsung</option>
+                                <option value="draft">Save as Draft</option>
+                                <option value="published">Publish Immediately</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan Artikel</button>
+                        <button type="submit" class="btn btn-primary">Save Article</button>
                     </div>
                 </form>
             </section>
 
-            <!-- Daftar Artikel + Filter & Pencarian -->
             <section class="panel-section">
                 <div class="section-toolbar">
-                    <h2>Daftar Artikel Saya</h2>
+                    <h2>My Articles</h2>
                     <form method="GET" action="dashboard.php" class="filter-form">
                         <input
                             type="text"
                             name="q"
                             value="<?= escapeHtml($searchQuery) ?>"
-                            placeholder="Cari judul/kategori..."
+                            placeholder="Search title or category..."
                         >
                         <select name="filter">
-                            <option value="all" <?= $filterStatus === 'all' ? 'selected' : '' ?>>Semua Status</option>
+                            <option value="all" <?= $filterStatus === 'all' ? 'selected' : '' ?>>All Statuses</option>
                             <option value="published" <?= $filterStatus === 'published' ? 'selected' : '' ?>>Published</option>
                             <option value="draft" <?= $filterStatus === 'draft' ? 'selected' : '' ?>>Draft</option>
                         </select>
@@ -303,16 +295,16 @@ $safeRole  = escapeHtml(strtoupper($authorProfile['role'] ?? 'author'));
                 </div>
 
                 <?php if (empty($articles)): ?>
-                    <p class="empty-state">Belum ada artikel yang cocok dengan filter saat ini.</p>
+                    <p class="empty-state">No articles match the current filter criteria.</p>
                 <?php else: ?>
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Judul &amp; Ringkasan</th>
-                                    <th>Kategori</th>
+                                    <th>Title &amp; Summary</th>
+                                    <th>Category</th>
                                     <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -334,14 +326,14 @@ $safeRole  = escapeHtml(strtoupper($authorProfile['role'] ?? 'author'));
                                                 <input type="hidden" name="action" value="toggle_status">
                                                 <input type="hidden" name="article_id" value="<?= (int) $art['id'] ?>">
                                                 <button type="submit" class="btn btn-secondary btn-xs">
-                                                    <?= $art['status'] === 'published' ? 'Jadikan Draft' : 'Publish' ?>
+                                                    <?= $art['status'] === 'published' ? 'Move to Draft' : 'Publish' ?>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="dashboard.php" class="inline-form" onsubmit="return confirm('Hapus artikel ini?');">
+                                            <form method="POST" action="dashboard.php" class="inline-form" onsubmit="return confirm('Delete this article permanently?');">
                                                 <input type="hidden" name="csrf_token" value="<?= escapeHtml($csrfToken) ?>">
                                                 <input type="hidden" name="action" value="delete_article">
                                                 <input type="hidden" name="article_id" value="<?= (int) $art['id'] ?>">
-                                                <button type="submit" class="btn btn-danger btn-xs">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-xs">Delete</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -352,44 +344,42 @@ $safeRole  = escapeHtml(strtoupper($authorProfile['role'] ?? 'author'));
                 <?php endif; ?>
             </section>
 
-            <!-- Pengaturan Profil Penulis -->
             <section class="panel-section">
-                <h2>Pengaturan Profil Penulis</h2>
+                <h2>Author Profile Settings</h2>
                 <form method="POST" action="dashboard.php">
                     <input type="hidden" name="csrf_token" value="<?= escapeHtml($csrfToken) ?>">
                     <input type="hidden" name="action" value="update_profile">
 
                     <div class="form-row-2">
                         <div class="form-group">
-                            <label for="profile_full_name">Nama Lengkap</label>
+                            <label for="profile_full_name">Full Name</label>
                             <input type="text" id="profile_full_name" name="full_name" value="<?= $safeName ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="profile_pen_name">Nama Pena</label>
+                            <label for="profile_pen_name">Pen Name</label>
                             <input type="text" id="profile_pen_name" name="pen_name" value="<?= $safePen === '-' ? '' : $safePen ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="profile_bio">Biografi</label>
+                        <label for="profile_bio">Biography</label>
                         <textarea id="profile_bio" name="bio" rows="2"><?= $safeBio ?></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-secondary">Perbarui Profil</button>
+                    <button type="submit" class="btn btn-secondary">Update Profile</button>
                 </form>
             </section>
 
-            <!-- Log Aktivitas Login -->
             <section class="panel-section">
-                <h2>Riwayat Aktivitas Login Terakhir</h2>
+                <h2>Recent Sign-In Activity</h2>
                 <div class="table-responsive">
                     <table class="data-table compact-table">
                         <thead>
                             <tr>
-                                <th>Waktu</th>
+                                <th>Timestamp</th>
                                 <th>IP Address</th>
                                 <th>Status</th>
-                                <th>Perangkat / Browser</th>
+                                <th>Device / Browser</th>
                             </tr>
                         </thead>
                         <tbody>

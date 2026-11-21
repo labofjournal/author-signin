@@ -96,7 +96,7 @@ try {
     $_SESSION['logged_in_at'] = $nowTs;
 
     redirectTo('dashboard.php?status=welcome');
-} catch (PDOException $e) {
+} catch (Throwable $e) {
     error_log('Login Error: ' . $e->getMessage());
     redirectTo('../componnent/login.html?error=server_error');
 }

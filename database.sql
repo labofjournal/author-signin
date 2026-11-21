@@ -1,45 +1,49 @@
--- Skema Database Lengkap untuk Sistem Author Sign-In & Portal Artikel
-CREATE DATABASE IF NOT EXISTS author_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE author_portal;
+PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS authors (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    pen_name VARCHAR(100) DEFAULT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    pen_name TEXT DEFAULT NULL,
     bio TEXT DEFAULT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role ENUM('author', 'editor') NOT NULL DEFAULT 'author',
-    failed_attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
-    locked_until DATETIME DEFAULT NULL,
-    last_login_at DATETIME DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'author' CHECK (role IN ('author', 'editor')),
+    failed_attempts INTEGER NOT NULL DEFAULT 0 CHECK (failed_attempts >= 0),
+    locked_until TEXT DEFAULT NULL,
+    last_login_at TEXT DEFAULT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS articles (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    author_id INT UNSIGNED NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    slug VARCHAR(220) NOT NULL UNIQUE,
-    category VARCHAR(60) NOT NULL DEFAULT 'Opini',
-    summary VARCHAR(300) NOT NULL,
-    content MEDIUMTEXT NOT NULL,
-    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
-    views_count INT UNSIGNED NOT NULL DEFAULT 0,
-    published_at DATETIME DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_articles_author FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    category TEXT NOT NULL DEFAULT 'Opini',
+    summary TEXT NOT NULL,
+    content TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+    views_count INTEGER NOT NULL DEFAULT 0 CHECK (views_count >= 0),
+    published_at TEXT DEFAULT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS login_logs (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    author_id INT UNSIGNED DEFAULT NULL,
-    email_attempted VARCHAR(150) NOT NULL,
-    ip_address VARCHAR(45) NOT NULL,
-    user_agent VARCHAR(255) NOT NULL,
-    status ENUM('success', 'failed', 'locked') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_login_logs_author FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author_id INTEGER DEFAULT NULL,
+    email_attempted TEXT NOT NULL,
+    ip_address TEXT NOT NULL DEFAULT '0.0.0.0',
+    user_agent TEXT NOT NULL DEFAULT 'unknown',
+    status TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_articles_author_id ON articles(author_id);
+CREATE INDEX IF NOT EXISTS idx_articles_slug ON articles(slug);
+CREATE INDEX IF NOT EXISTS idx_login_logs_author_id ON login_logs(author_id);
+CREATE INDEX IF NOT EXISTS idx_login_logs_email ON login_logs(email_attempted);
+CREATE INDEX IF NOT EXISTS idx_login_logs_created_at ON login_logs(created_at);

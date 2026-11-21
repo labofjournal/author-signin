@@ -10,8 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $fullName        = sanitizeInput($_POST['full_name'] ?? '');
 $penName         = sanitizeInput($_POST['pen_name'] ?? '');
-$rawEmail        = $_POST['email'] ?? '';
-$email           = sanitizeEmail($rawEmail);
+$email           = sanitizeEmail($_POST['email'] ?? '');
 $bio             = sanitizeInput($_POST['bio'] ?? '');
 $password        = $_POST['password'] ?? '';
 $confirmPassword = $_POST['confirm_password'] ?? '';
@@ -66,7 +65,7 @@ try {
     ]);
 
     redirectTo('../componnent/login.html?status=registered');
-} catch (PDOException $e) {
+} catch (Throwable $e) {
     error_log('Registration Error: ' . $e->getMessage());
     redirectTo('../componnent/register.html?error=server_error');
 }

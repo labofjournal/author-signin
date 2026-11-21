@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../includes/functions.php';
 
 startSecureSession();
-
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {
@@ -19,5 +18,4 @@ if (ini_get('session.use_cookies')) {
 }
 
 session_destroy();
-
 redirectTo('../componnent/login.html?status=logged_out');
